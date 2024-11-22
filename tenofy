@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# Function to display usage/help message
+usage() {
+  echo "Usage: $0 [-t duration] [-m message]"
+  echo "  -t duration  Timer duration (e.g., 1h 10m 50s)"
+  echo "  -m message   Notification message to display when the timer is up"
+  echo "  -h, --help   Show this help message and exit"
+  echo
+  echo "Example:"
+  echo "  $0 -t '1h 10m 50s' -m 'This is the message'"
+  echo "  $0 -t '5m 30s' -m 'Break time is over!'"
+  exit 0
+}
+
+# Function to validate and format duration
+validate_duration() {
+  local input=$1
+  # Check if the input contains any spaces
+  if [[ "$input" =~ [0-9]+[hms] ]]; then
+    # Add spaces after 'h' and 'm' if not present
+    echo "$input" | sed -E 's/([0-9]+[h])/\1 /g; s/([0-9]+[m])/\1 /g'
+  else
+    echo "Invalid duration format. Use spaces like '1h 10m 50s' or similar." >&2
+    exit 1
+  fi
+}
+
+# Initialize variables
+duration=""
+message=""
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -t)
+      duration=$2
+      shift 2
+      ;;
+    -m)
+      message=$2
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      usage
+      ;;
+  esac
+done
+
+# If arguments are not provided, prompt for input
+if [ -z "$duration" ]; then
+  read -p "Enter the timer duration (e.g., 5s | 3m 15s | 1h 10m 50s): " duration
+fi
+
+if [ -z "$message" ]; then
+  read -p "Enter the notification message: " message
+fi
+
+# Validate and format duration
+duration=$(validate_duration "$duration")
+
+# Validate input
+if [ -z "$duration" ] || [ -z "$message" ]; then
+  echo "Error: Both duration and message are required."
+  usage
+fi
+
+# Start the timer in the background
+(
+  sleep $duration
+  notify-send -i dialog-information "Timer is Up!" "$message"
+) &
+
+# Display summary and return control to the terminal
+echo "OK. Timer is running in the background. You can continue working."

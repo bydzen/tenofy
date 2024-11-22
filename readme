@@ -1,0 +1,24 @@
+How to Install on Linux Machine
+
+Steps:
+1. Save the script as `tenofy`.
+2. Make the script executable: chmod +x tenofy
+3. Copy the script to a directory in your PATH (e.g., /usr/bin/):
+   sudo cp tenofy /usr/bin/
+4. Ensure `notify-send` is installed:
+   - Debian/Ubuntu: sudo apt install libnotify-bin
+5. Run the script: tenofy
+
+Usage:
+tenofy -t '1h 10m 50s' -m 'This is the message'
+tenofy -t '5m 30s' -m 'Break time is over!'
+
+Options:
+-t duration  Timer duration (e.g., 1h 10m 50s)
+-m message   Notification message to display when the timer is up
+-h, --help   Show this help message and exit
+
+Help:
+tenofy --help
+
+Enjoy.
